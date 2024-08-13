@@ -1,6 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+
+    // For Hilt
+    kotlin("kapt")
+    id ("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+    // Navigation using: https://github.com/raamcosta/compose-destinations
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
+
 }
 
 android {
@@ -66,4 +74,37 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    // Hilt
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+    // Moshi for json converter
+    implementation("com.squareup.moshi:moshi:1.14.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+
+    // Navigation
+    implementation("io.github.raamcosta.compose-destinations:animations-core:1.9.42-beta") // Make sure to use the latest compatible version
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.9.42-beta") // Updated to match the library and Kotlin versions
+
+    // Koin
+    implementation ("io.insert-koin:koin-core:3.1.5")
+    implementation ("io.insert-koin:koin-android:3.1.5")
+    implementation ("io.insert-koin:koin-androidx-compose:3.1.5")
+
+    // ViewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
 }
