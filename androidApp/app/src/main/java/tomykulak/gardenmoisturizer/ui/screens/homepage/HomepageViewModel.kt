@@ -4,8 +4,10 @@ import tomykulak.gardenmoisturizer.R
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tomykulak.gardenmoisturizer.architecture.BaseViewModel
@@ -22,10 +24,18 @@ class HomepageViewModel @Inject constructor(
 {
 
     init {
-        loadMoistureSensor()
+        startPeriodicDataRefresh()
     }
 
     val moistureSensorUIState: MutableState<UiState<MoistureData, HomepageErrors>> = mutableStateOf(UiState())
+
+    private fun startPeriodicDataRefresh() {
+        viewModelScope.launch {while (true) {
+            loadMoistureSensor()
+            delay(5000)
+            }
+        }
+    }
 
     fun loadMoistureSensor(){
         launch(){
