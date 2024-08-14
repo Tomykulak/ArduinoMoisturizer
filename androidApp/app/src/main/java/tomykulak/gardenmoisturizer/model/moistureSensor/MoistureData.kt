@@ -5,6 +5,6 @@ import java.io.Serializable
 
 @JsonClass(generateAdapter = true)
 data class MoistureData(
-    var int: Int,
-    var float: Float
-)
+    var percentage: Int,
+    var isValveOpen: Boolean
+): Serializable

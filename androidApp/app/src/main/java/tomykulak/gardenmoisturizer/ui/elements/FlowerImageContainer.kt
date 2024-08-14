@@ -17,7 +17,7 @@ fun FlowerImageContainer(
 ){
     val imgHeight = 450.dp
     if(moistureData != null){
-        if(moistureData.int >= 80){
+        if(moistureData.percentage >= 80){
             Image(
                 painter = painterResource(id = R.mipmap.happy_sunflower_foreground), // Replace with your actual resource
                 contentDescription = "Happy Sunflower",
@@ -25,7 +25,7 @@ fun FlowerImageContainer(
                     .fillMaxWidth()
                     .height(imgHeight)
             )
-        } else if(moistureData.int in 50..80){
+        } else if(moistureData.percentage in 50..80){
             Image(
                 painter = painterResource(id = R.mipmap.okay_sunflower_foreground), // Replace with your actual resource
                 contentDescription = "Okay Sunflower",
@@ -33,7 +33,7 @@ fun FlowerImageContainer(
                     .fillMaxWidth()
                     .height(imgHeight)
             )
-        } else if (moistureData.int in 1..50){
+        } else if (moistureData.percentage in 1..50){
             Image(
                 painter = painterResource(id = R.mipmap.sad_sunflower_foreground), // Replace with your actual resource
                 contentDescription = "Sad Sunflower",
@@ -43,8 +43,12 @@ fun FlowerImageContainer(
             )
 
         }
-        Text(text = "Moisture Int: ${moistureData!!.int}")
-        Text(text = "Moisture Float: ${moistureData!!.float}")
+        Text(text = "Moisture Int: ${moistureData.percentage}%")
+        if (moistureData.isValveOpen){
+            Text(text = "Valve is open")
+        } else {
+            Text(text = "Valve is closed")
+        }
     } else {
         Text("No data or image sadge")
     }
