@@ -1,5 +1,6 @@
 package tomykulak.gardenmoisturizer.ui.screens.homepage
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -21,7 +22,13 @@ import tomykulak.gardenmoisturizer.ui.elements.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import tomykulak.gardenmoisturizer.R
 
 @RootNavGraph(start = true)
 @Destination
@@ -74,8 +81,9 @@ fun HomepageScreenContent(
         if (uiState.data != null){
             val moistureData = uiState.data
             item {
-                Text(text = "Moisture Int: ${moistureData!!.int}")
-                Text(text = "Moisture Float: ${moistureData!!.float}")
+                FlowerImageContainer(
+                    moistureData
+                )
             }
         } else {
             item {
