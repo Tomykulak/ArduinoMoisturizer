@@ -25,8 +25,7 @@ object RetrofitModule {
     @Singleton
     fun provideRetrofit(moshi: Moshi): Retrofit {
         return Retrofit.Builder()
-            // TODO()
-            .baseUrl("needs real url from firebase")
+            .baseUrl("https://gardenmoisturizer-default-rtdb.europe-west1.firebasedatabase.app/")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
