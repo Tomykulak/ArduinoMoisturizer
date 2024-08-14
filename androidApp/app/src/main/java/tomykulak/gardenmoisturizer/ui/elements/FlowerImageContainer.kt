@@ -43,7 +43,7 @@ fun FlowerImageContainer(
             )
 
         }
-        Text(text = "Moisture Int: ${moistureData.percentage}%")
+        Text(text = "Soil moisture: ${moistureData.percentage}%")
         if (moistureData.isValveOpen){
             Text(text = "Valve is open")
         } else {
