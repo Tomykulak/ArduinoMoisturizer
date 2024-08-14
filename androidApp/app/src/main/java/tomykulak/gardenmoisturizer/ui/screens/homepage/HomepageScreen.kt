@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -16,6 +17,12 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import tomykulak.gardenmoisturizer.model.UiState
 import tomykulak.gardenmoisturizer.model.moistureSensor.MoistureData
+import tomykulak.gardenmoisturizer.ui.elements.*
+import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
+
 @RootNavGraph(start = true)
 @Destination
 @Composable
@@ -28,13 +35,26 @@ fun HomepageScreen(
     uiState.value = viewModel.moistureSensorUIState.value
 
     val paddingValues = PaddingValues()
+    BaseScreen(
+        topBarText = "Garden Moisture",
+        drawFullScreenContent = true,
+        showLoading = uiState.value.loading,
+        placeholderScreenContent =
+        if (uiState.value.errors != null)
+            PlaceholderScreenContent(null, stringResource(id = uiState.value.errors!!.communicationError))
+        else
+            null
+        ,
+        navigator = navigator
+    ) {
+        HomepageScreenContent(
+            paddingValues = paddingValues,  // Pass paddingValues explicitly
+            uiState = uiState.value,
+            navigator = navigator,
+            viewModel = viewModel
+        )
+    }
 
-    HomepageScreenContent(
-        paddingValues = paddingValues,  // Pass paddingValues explicitly
-        uiState = uiState.value,
-        navigator = navigator,
-        viewModel = viewModel
-    )
 }
 
 
@@ -45,24 +65,22 @@ fun HomepageScreenContent(
     navigator: DestinationsNavigator,
     viewModel: HomepageViewModel
 ) {
-    Column(
-        modifier = Modifier.padding(paddingValues = paddingValues)
+    LazyColumn(modifier = Modifier
+        .padding(paddingValues = paddingValues)
+        .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Create a local immutable reference to the data property
-        val moistureData = uiState.data
-
-        // Check if the data is available
-        if (moistureData != null) {
-            // Extract the int and float values from MoistureData
-            val moistureInt = moistureData.int
-            val moistureFloat = moistureData.float
-
-            // Display the values
-            Text(text = "Moisture Int: $moistureInt")
-            Text(text = "Moisture Float: $moistureFloat")
+        if (uiState.data != null){
+            val moistureData = uiState.data
+            item {
+                Text(text = "Moisture Int: ${moistureData!!.int}")
+                Text(text = "Moisture Float: ${moistureData!!.float}")
+            }
         } else {
-            // If there's an error or no data, display an appropriate message
-            Text(text = "Loading data or no data available.")
+            item {
+                Text(text = "No data available.")
+            }
         }
     }
 }
