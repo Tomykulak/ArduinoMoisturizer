@@ -55,30 +55,35 @@ fun BaseScreen(
                 actions = actions,
             )
         }
-    ) {
-        if (placeholderScreenContent != null){
-            PlaceHolderScreen(
-                modifier = Modifier.padding(it),
-                content = placeholderScreenContent)
-        } else if (showLoading){
-            LoadingScreen(modifier = Modifier.padding(it))
-        } else {
-            if (!drawFullScreenContent) {
-                LazyColumn(modifier = Modifier.padding(it)) {
-                    item {
-                        Column(
-                            verticalArrangement = Arrangement.Top,
-                            modifier = Modifier
-                                .padding(if (!showSidePadding) 16.dp else 16.dp)
-                        ) {
-                            content(it)
+    ) { it ->
+        Column(
+            modifier = Modifier
+                .padding(it),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ){
+            if (placeholderScreenContent != null){
+                PlaceHolderScreen(
+                    modifier = Modifier.padding(it),
+                    content = placeholderScreenContent)
+            } else if (showLoading){
+                LoadingScreen(modifier = Modifier.padding(it))
+            } else {
+                if (!drawFullScreenContent) {
+                    LazyColumn(modifier = Modifier.padding(it)) {
+                        item {
+                            Column(
+                                verticalArrangement = Arrangement.Top,
+                                modifier = Modifier
+                                    .padding(if (!showSidePadding) 16.dp else 16.dp)
+                            ) {
+                                content(it)
+                            }
                         }
                     }
+                } else {
+                    content(it)
                 }
-            } else {
-                content(it)
             }
         }
     }
-
 }

@@ -55,10 +55,8 @@ fun HomepageScreen(
         navigator = navigator
     ) {
         HomepageScreenContent(
-            paddingValues = paddingValues,  // Pass paddingValues explicitly
-            uiState = uiState.value,
-            navigator = navigator,
-            viewModel = viewModel
+            paddingValues = paddingValues,
+            uiState = uiState.value
         )
     }
 
@@ -69,13 +67,11 @@ fun HomepageScreen(
 fun HomepageScreenContent(
     paddingValues: PaddingValues,
     uiState: UiState<MoistureData, HomepageErrors>,
-    navigator: DestinationsNavigator,
-    viewModel: HomepageViewModel
 ) {
     LazyColumn(modifier = Modifier
         .padding(paddingValues = paddingValues)
         .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        //verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (uiState.data != null){
