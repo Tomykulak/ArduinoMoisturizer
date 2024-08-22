@@ -1,16 +1,34 @@
+//ESP for current arduino model using ESP for wifi
 #include <ESP8266WiFi.h>
+//Private data
 #include "moisturizerWifiSecrets.h"
-/*
-  Rui Santos
-  Complete project details at our blog.
-    - ESP32: https://RandomNerdTutorials.com/esp32-firebase-realtime-database/
-    - ESP8266: https://RandomNerdTutorials.com/esp8266-nodemcu-firebase-realtime-database/
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-  Based in the RTDB Basic Example by Firebase-ESP-Client library by mobizt
-  https://github.com/mobizt/Firebase-ESP-Client/blob/main/examples/RTDB/Basic/Basic.ino
+//Usage of display
+#include <LiquidCrystal_I2C.h>
+
+/*IMPORTANT!!
+  TO PROGRAM/LOAD DATA INTO ESP8266
+  USE PINS ON:  5,6,7
+           OFF: 1,2,3,4,8
+
+  AFTER LOADING SWITCH TO
+      PINS ON:  5,6
+           OFF: 1,2,3,4,7,8
 */
 
+
+/*sensors setup*/
+// Replace 0x27 with the correct address if different
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+const int moisturePin = A0; // Moisture sensor input pin
+const int relayPin = 3;     // Relay control pin
+
+int moistureValue = 0;      // Variable to store the moisture value
+int moisturePercent = 0;    // Variable to store the moisture percentage
+/*sensors setup end*/
+
+
+/*firebase setup*/
 #include <Arduino.h>
 #if defined(ESP32)
   #include <WiFi.h>
@@ -34,7 +52,7 @@ unsigned long sendDataPrevMillis = 0;
 int count = 0;
 bool signupOK = false;
 bool isValveOpen = true;
-
+/*firebase setup end*/
 
 void setup(){
   Serial.begin(115200);
@@ -69,13 +87,52 @@ void setup(){
   
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
+
+  // lcd light on
+  lcd.init();
+  lcd.backlight();
+  // relay mode setup
+  pinMode(relayPin, OUTPUT);
 }
 
 void loop(){
+  // read values from sensor
+  // the lower the value the wetter the sensor
+  // 500 - 400 is dry
+  // 300 > x is under water
+  moistureValue = analogRead(moisturePin);
+  // Map the moistureValue to a percentage using a more detailed mapping
+  if (moistureValue <= 300) {
+    moisturePercent = 100;
+  } else if (moistureValue >= 500) {
+    moisturePercent = 0;
+  } else {
+    // Calculate the percentage manually for more precision
+    moisturePercent = 100 - ((moistureValue - 300) * 100 / 200);
+  }
+
+  // Display moisture percentage on the LCD
+  lcd.setCursor(1, 0);
+  lcd.print("Vlhkost: ");
+  lcd.print(moisturePercent);
+  lcd.print("%");
+  delay(1500);
+  lcd.clear();
+
+  // Open valve if moistureValue is high (dry), close if lower
+  if (moistureValue > 400) {
+    digitalWrite(relayPin, HIGH);
+    lcd.print("Opening valve");
+    delay(1000);
+    lcd.clear();
+  } else {
+    digitalWrite(relayPin, LOW);
+  }
+
   if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
     // Write an Int number on the database path test/int
-    if (Firebase.RTDB.setInt(&fbdo, "moisture/percentage", random(0,100))){
+    if (Firebase.RTDB.setInt(&fbdo, "moisture/percentage", moisturePercent)){
       Serial.println("PASSED");
       Serial.println("PATH: " + fbdo.dataPath());
       Serial.println("TYPE: " + fbdo.dataType());
