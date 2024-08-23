@@ -37,43 +37,58 @@ class HomepageViewModel @Inject constructor(
         }
     }
 
-    fun loadMoistureSensor(){
-        launch(){
-            val result = withContext(Dispatchers.IO){
+    private suspend fun loadMoistureSensor() {
+        try {
+            val result = withContext(Dispatchers.IO) {
                 moistureSensorRemoteRepositoryImpl.getMoistureData()
             }
             when (result) {
                 is CommunicationResult.ConnectionError -> {
-                    moistureSensorUIState.value = UiState(loading = false, null,
+                    moistureSensorUIState.value = UiState(
+                        loading = false,
+                        data = null,
                         errors = HomepageErrors(R.string.no_internet_connection)
                     )
                 }
                 is CommunicationResult.Error -> {
-                    moistureSensorUIState.value = UiState(loading = false, null,
-                        errors = HomepageErrors(R.string.failed_to_load_the_list))
+                    moistureSensorUIState.value = UiState(
+                        loading = false,
+                        data = null,
+                        errors = HomepageErrors(R.string.failed_to_load_the_list)
+                    )
                     Log.d("LoadingError", result.toString())
                 }
                 is CommunicationResult.Exception -> {
-                    moistureSensorUIState.value = UiState(loading = false, null,
-                        errors = HomepageErrors(R.string.unknown_error))
+                    moistureSensorUIState.value = UiState(
+                        loading = false,
+                        data = null,
+                        errors = HomepageErrors(R.string.unknown_error)
+                    )
                 }
                 is CommunicationResult.Success -> {
-                    if(result.data != null) {
+                    if (result.data.percentage > 0) {
                         moistureSensorUIState.value = UiState(
                             loading = false,
-                            result.data,
+                            data = result.data,
                             errors = null
                         )
                     } else {
                         moistureSensorUIState.value = UiState(
                             loading = false,
                             data = null,
-                            errors = HomepageErrors(R.string.list_is_empty
-                            )
+                            errors = HomepageErrors(R.string.list_is_empty)
                         )
                     }
                 }
             }
+        } catch (e: Exception) {
+            // This will catch any unexpected exceptions
+            moistureSensorUIState.value = UiState(
+                loading = false,
+                data = null,
+                errors = HomepageErrors(R.string.no_internet_connection)
+            )
+            Log.e("Exception", "Error loading data: ${e.localizedMessage}")
         }
     }
 

@@ -7,4 +7,9 @@ import java.io.Serializable
 data class MoistureData(
     var percentage: Int,
     var isValveOpen: Boolean
-): Serializable
+): Serializable {
+
+    fun isEmpty(): Boolean {
+        return percentage == 0
+    }
+}
